@@ -1,0 +1,37 @@
+on:
+  push:
+    paths:
+      - 'entrypoint.md'
+      - 'pages/**.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build Slides PDF
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js version 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Enable corepack
+        run: corepack enable
+        # This step enables corepack so yarn 4 could be installed
+      - name: Setup emojis
+        run: |
+          curl -L --output NotoColorEmoji.ttf https://github.com/googlefonts/noto-emoji/raw/refs/heads/main/fonts/NotoColorEmoji.ttf
+          sudo mv NotoColorEmoji.ttf /usr/local/share/fonts
+          fc-cache -fv
+      - name: Ensure dependencies
+        run: yarn install --immutable
+      - name: Build slides PDF
+        id: buildpdf
+        run: |
+          OUTFILE=deployment-101_$(date +%F_%H-%M-%S).pdf
+          yarn export --output=$OUTFILE
+          echo "outfile=$OUTFILE" >> $GITHUB_OUTPUT
+      - name: Upload slides
+        uses: actions/upload-artifact@v4
+        with:
+          name: slides-file
+          path: ${{ steps.buildpdf.outputs.outfile }}
