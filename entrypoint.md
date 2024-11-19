@@ -32,3 +32,7 @@ Pawitchaya Chaloeijanya (KU81, SKE19, former DevOps Engineer Intern)
 ---
 src: ./pages/deployment-102/recap.md
 ---
+
+---
+src: ./pages/deployment-102/slides.md
+---
